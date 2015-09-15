@@ -1,21 +1,28 @@
-﻿{
-  "version": "1.0.0-*",
+{
+  "version": "1.0.1",
   "description": "EFAuditing Class Library",
-  "authors": [ "JohannBrink" ],
-  "tags": [ "" ],
-  "projectUrl": "",
+  "authors": [ "Johann Brink" ],
+  "tags": [ "EntityFramework EF7 Mongo MongoDB" ],
+  "projectUrl": "https://github.com/johannbrink/EFAuditing",
   "licenseUrl": "",
-
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
     "dnxcore50": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23225",
         "System.Collections": "4.0.11-beta-23225",
+        "System.ComponentModel.Annotations": "4.0.11-beta-23225",
         "System.Linq": "4.0.1-beta-23225",
-        "System.Runtime": "4.0.21-beta-23225",
-        "System.Threading": "4.0.11-beta-23225"
+        "System.Reflection": "4.1.0-beta-23225"
       }
     }
+  },
+  "dependencies": {
+    "EntityFramework.Core": "7.0.0-beta7",
+    "EntityFramework.Relational": "7.0.0-beta7"
   }
 }
