@@ -21,6 +21,9 @@ namespace EFAuditing
 
         private readonly string _auditTableName;
         private readonly string _auditSchemaName;
+        private readonly IExternalAuditStoreProvider _externalAuditStoreProvider;
+
+        private bool ExternalProviderSpecified => _externalAuditStoreProvider != null;
 
         #region Constructors
 
@@ -35,6 +38,18 @@ namespace EFAuditing
         {
             _auditTableName = DefaultAuditTableName;
             _auditSchemaName = DefaultAuditSchemaName;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the AuditingDbContext class (Extends Microsoft.Data.Entity.DbContext). 
+        ///     This class writes Audit Logs to the current database using Entity Framework to the default table: [audit].[AuditLogs]
+        ///     The Microsoft.Data.Entity.DbContext.OnConfiguring(Microsoft.Data.Entity.DbContextOptionsBuilder)
+        ///     method will be called to configure the database (and other options) to be used
+        ///     for this context.
+        /// </summary>
+        protected AuditingDbContext(IExternalAuditStoreProvider externalAuditStoreProvider)
+        {
+            _externalAuditStoreProvider = externalAuditStoreProvider;
         }
 
         /// <summary>
@@ -58,7 +73,9 @@ namespace EFAuditing
         ///     method will still be called to allow further configuration of the options.
         /// </summary>
         /// <param name="options">The options for this context.</param>
-        protected AuditingDbContext(DbContextOptions options) : base(options) { }
+        protected AuditingDbContext(DbContextOptions options) : base(options)
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the AuditingDbContext class (Extends Microsoft.Data.Entity.DbContext) using an System.IServiceProvider.
@@ -73,7 +90,9 @@ namespace EFAuditing
         ///     method will still be called to allow further configuration of the options.
         /// </summary>
         /// <param name="serviceProvider">The service provider to be used.</param>
-        protected AuditingDbContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected AuditingDbContext(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the AuditingDbContext class (Extends Microsoft.Data.Entity.DbContext) using
@@ -92,7 +111,10 @@ namespace EFAuditing
         /// </summary>
         /// <param name="serviceProvider">The service provider to be used.</param>
         /// <param name="options">The options for this context.</param>
-        protected AuditingDbContext(IServiceProvider serviceProvider, DbContextOptions options) : base(serviceProvider,options) { }
+        protected AuditingDbContext(IServiceProvider serviceProvider, DbContextOptions options)
+            : base(serviceProvider, options)
+        {
+        }
 
         #endregion
 
@@ -114,14 +136,16 @@ namespace EFAuditing
         [Obsolete("A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.")]
         public new Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new InvalidOperationException("A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.");
+            throw new InvalidOperationException(
+                "A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.");
         }
 
         [Obsolete("A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.")]
         public new Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new InvalidOperationException("A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.");
+            throw new InvalidOperationException(
+                "A UserName is required. Use SaveChangesAsync(userName, cancellationToken) instead.");
         }
 
         #endregion
@@ -138,7 +162,8 @@ namespace EFAuditing
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            ConfigureModelBuilder(modelBuilder, _auditTableName, _auditSchemaName);
+            if (!ExternalProviderSpecified)
+                ConfigureModelBuilder(modelBuilder, _auditTableName, _auditSchemaName);
         }
 
         /// <summary>
@@ -151,9 +176,10 @@ namespace EFAuditing
         /// <param name="modelBuilder">The builder being used to construct the model for this context. Databases (and other extensions) typically define extension methods on this object that allow you to configure aspects of the model that are specific to a given database.</param>
         /// <param name="auditTableName">SQL Table Name</param>
         /// <param name="auditSchemaName">SQL Schema Name</param>
-        public static void ConfigureModelBuilder(ModelBuilder modelBuilder, string auditTableName, string auditSchemaName)
+        public static void ConfigureModelBuilder(ModelBuilder modelBuilder, string auditTableName,
+            string auditSchemaName)
         {
-                modelBuilder.Entity<AuditLog>().ToTable(auditTableName, schema: auditSchemaName);
+            modelBuilder.Entity<AuditLog>().ToTable(auditTableName, schema: auditSchemaName);
         }
 
         /// <summary>
@@ -174,11 +200,19 @@ namespace EFAuditing
             var modifiedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Modified).ToList();
             var deletedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Deleted).ToList();
 
-            base.SaveChanges();
+            var result = base.SaveChanges();
 
-            var auditLogs = AuditLogBuilder.GetAuditLogs(userName, addedEntityEntries, modifiedEntityEntries, deletedEntityEntries);
-            Set<AuditLog>().AddRange(auditLogs);
-            return base.SaveChanges();
+            var auditLogs = AuditLogBuilder.GetAuditLogs(userName, addedEntityEntries, modifiedEntityEntries,
+                deletedEntityEntries);
+
+            if (ExternalProviderSpecified)
+                _externalAuditStoreProvider.WriteAuditLogsAsync(auditLogs);
+            else
+            {
+                Set<AuditLog>().AddRange(auditLogs);
+                base.SaveChanges();
+            }
+            return result;
         }
 
         /// <summary>
@@ -204,14 +238,17 @@ namespace EFAuditing
         public virtual Task<int> SaveChangesAsync(string userName, CancellationToken cancellationToken)
         {
             //TODO: Implement this
-            throw new NotImplementedException($"Audit logic not implemented for SaveChangesAsync(string userName, CancellationToken cancellationToken) yet. Use SaveChanges(string userName) instead.");
+            throw new NotImplementedException(
+                $"Audit logic not implemented for SaveChangesAsync(string userName, CancellationToken cancellationToken) yet. Use SaveChanges(string userName) instead.");
             //return base.SaveChangesAsync(cancellationToken);
         }
-
-
-        public DbSet<AuditLog> GetAuditLogs()
+        
+        public IEnumerable<AuditLog> GetAuditLogs()
         {
-            return Set<AuditLog>();
+            if (!ExternalProviderSpecified)
+                return Set<AuditLog>();
+            else
+                throw new NotImplementedException($"{nameof(GetAuditLogs)} is not supported yet when using an ExternalAuditStoreProvider.");
         }
     }
 }
