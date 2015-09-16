@@ -2,6 +2,8 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using EFAuditing.TestHarness.Shared;
+using Microsoft.Data.Entity.Metadata;
 
 namespace EFAuditing.TestHarness
 {
@@ -14,7 +16,7 @@ namespace EFAuditing.TestHarness
                 myDbContext.Database.EnsureDeleted();
                 myDbContext.Database.EnsureCreated();
 
-                var customer = new Model.Customer()
+                var customer = new Customer()
                 {
                     FirstName = "TestFirstName",
                     LastName = "TEstLAstNAme"

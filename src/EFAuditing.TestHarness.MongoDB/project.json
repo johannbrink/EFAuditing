@@ -1,0 +1,20 @@
+﻿{
+  "authors": [ "Johann" ],
+  "commands": {
+    "EFAuditing.TestHarness": "EFAuditing.TestHarness.MongoDB"
+  },
+  "dependencies": {
+    "EFAuditing": "",
+    "EFAuditing.MongoDB": "",
+    "EFAuditing.TestHarness.Shared": "",
+    "EntityFramework.SqlServer": "7.0.0-beta7"
+  },
+  "description": "EFAuditing.TestHarness.MongoDB Console Application",
+  "frameworks": {
+    "dnx451": { }
+  },
+  "licenseUrl": "",
+  "projectUrl": "",
+  "tags": [ "" ],
+  "version": "1.0.0-*"
+}

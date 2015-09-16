@@ -1,4 +1,4 @@
-﻿using EFAuditing.TestHarness.Model;
+﻿using EFAuditing.TestHarness.Shared;
 using Microsoft.Data.Entity;
 
 namespace EFAuditing.TestHarness

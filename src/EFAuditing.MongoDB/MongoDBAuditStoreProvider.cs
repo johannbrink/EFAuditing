@@ -8,10 +8,14 @@ namespace EFAuditing.MongoDB
     public class MongoDBAuditStoreProvider : IExternalAuditStoreProvider
     {
         private readonly string _connectionString;
+        private readonly string _databaseName;
+        private readonly string _collectionName;
 
-        public MongoDBAuditStoreProvider(string connectionString)
+        public MongoDBAuditStoreProvider(string connectionString, string databaseName, string collectionName)
         {
             _connectionString = connectionString;
+            _databaseName = databaseName;
+            _collectionName = collectionName;
         }
 
         public List<AuditLog> ReadAuditLogs()
@@ -21,9 +25,14 @@ namespace EFAuditing.MongoDB
 
         public async void WriteAuditLogsAsync(IEnumerable<AuditLog> auditLogs)
         {
-            var client = new MongoClient("mongodb://localhost");
-            var database = client.GetDatabase("foo");
-            var collection = database.GetCollection<BsonDocument>("bar");
+            var client = new MongoClient(_connectionString);
+            var database = client.GetDatabase(_databaseName);
+            var collection = database.GetCollection<BsonDocument>(_collectionName);
+            foreach (var auditLog in auditLogs)
+            {
+                auditLog.ToBsonDocument(typeof(AuditLog), )
+            }
+            collection.InsertManyAsync(auditLogs.ToBsonDocument<AuditLog>());
             throw new NotImplementedException();
         }
     }
