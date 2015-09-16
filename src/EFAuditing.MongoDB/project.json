@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "dependencies": {
+    "EFAuditing": "1.0.4"
+  },
+  "description": "EFAuditing.MongoDBAuditStoreProvider Class Library",
+  "authors": [ "Johann" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "frameworks": {
+    "dnx451": {
+      "dependencies": {
+        "MongoDB.Driver": "2.0.1",
+        "System.Runtime": "4.0.0.0"
+      }
+    }
+  }
+}

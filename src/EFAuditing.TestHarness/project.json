@@ -4,7 +4,7 @@
     "EFAuditing.TestHarness": "EFAuditing.TestHarness"
   },
   "dependencies": {
-    "EFAuditing": "1.0.1",
+    "EFAuditing": "",
     "EntityFramework.SqlServer": "7.0.0-beta7"
   },
   "description": "EFAuditing.TestHarness Console Application",

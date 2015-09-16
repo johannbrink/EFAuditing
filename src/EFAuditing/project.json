@@ -14,7 +14,7 @@
     "dnxcore50": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23225",
-        "System.Collections": "4.0.11-beta-*",
+        "System.Collections": "4.0.11-beta-23225",
         "System.ComponentModel.Annotations": "4.0.11-beta-23225",
         "System.Linq": "4.0.1-beta-23225",
         "System.Reflection": "4.1.0-beta-23225"
@@ -22,7 +22,6 @@
     },
     "net45": {
       "frameworkAssemblies": {
-        "System.ComponentModel.DataAnnotations": "4.0.0.0",
         "System.Runtime": "4.0.0.0"
       }
     },
