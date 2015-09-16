@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
@@ -207,5 +208,10 @@ namespace EFAuditing
             //return base.SaveChangesAsync(cancellationToken);
         }
 
+
+        public DbSet<AuditLog> GetAuditLogs()
+        {
+            return Set<AuditLog>();
+        }
     }
 }
