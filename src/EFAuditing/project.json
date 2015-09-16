@@ -34,7 +34,7 @@
   },
   "licenseUrl": "https://raw.githubusercontent.com/johannbrink/EFAuditing/master/LICENSE",
   "projectUrl": "https://github.com/johannbrink/EFAuditing",
-  "releaseNotes": "1.0.0\nInitial version that supports Audit Model in local EF database. Next version will be compatible with MongoDB log writer that can write audit events to an external MongoDB database.\n\n1.0.1\nFixed bug that swapped old and new values in the audit log table.\n\n1.0.2\nAdded Support for additional .NET frameworks to align with what Entity framework Supports\nAdded IExternalAuditStoreProvider and logic for External Audit Store Providers.\n",
+  "releaseNotes": "1.0.0\nInitial version that supports Audit Model in local EF database. Next version will be compatible with MongoDB log writer that can write audit events to an external MongoDB database.\n\n1.0.1\nFixed bug that swapped old and new values in the audit log table.\n\n1.0.2\nAdded Support for additional .NET frameworks to align with what Entity framework supports\nAdded IExternalAuditStoreProvider and logic for External Audit Store Providers.\n",
   "summary": "A package that implements Auditing for Entity Framework 7 based DbContexts. It is extensible to allow other logging providers like MongoDB, Azure tables etc.\nJust inherit AuditingDbContext from your application's DbContext and use the overloaded SaveChange(string userName) instead of the standard SaveChanges().",
   "title": "Entity Framework (EF7+) Auditing",
   "tags": [ "EntityFramework EF7 Mongo MongoDB" ],
