@@ -206,7 +206,15 @@ namespace EFAuditing
                 deletedEntityEntries);
 
             if (ExternalProviderSpecified)
-                _externalAuditStoreProvider.WriteAuditLogsAsync(auditLogs);
+            {
+                var task = _externalAuditStoreProvider.WriteAuditLogs(auditLogs);
+                while (!task.IsCompleted)
+                {
+                    task.Wait(10);
+                }
+                if (!task.IsFaulted) return result;
+                if (task.Exception != null) throw task.Exception.InnerException;
+            }
             else
             {
                 Set<AuditLog>().AddRange(auditLogs);
@@ -242,13 +250,15 @@ namespace EFAuditing
                 $"Audit logic not implemented for SaveChangesAsync(string userName, CancellationToken cancellationToken) yet. Use SaveChanges(string userName) instead.");
             //return base.SaveChangesAsync(cancellationToken);
         }
-        
+
+        /// <summary>
+        /// Reads the audit logs. Simple method that should be refined when using external AuditStoreProviders.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetAuditLogs()
         {
-            if (!ExternalProviderSpecified)
-                return Set<AuditLog>();
-            else
-                throw new NotImplementedException($"{nameof(GetAuditLogs)} is not supported yet when using an ExternalAuditStoreProvider.");
+            return ExternalProviderSpecified ? _externalAuditStoreProvider.ReadAuditLogs() : Set<AuditLog>();
+            //TODO: This should filter when using external providers as _externalAuditStoreProvider.ReadAuditLogs() does not chain LINQ to subsystem queries.
         }
     }
 }
