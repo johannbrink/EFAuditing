@@ -1,7 +1,7 @@
 {
   "authors": [ "Johann Brink" ],
   "dependencies": {
-    "EFAuditing": "1.0.4"
+    "EFAuditing": "1.0.5"
   },
   "description": "This package is a MongoDB based AuditStoreProvider that extends the EFAuditing NuGet package's functionality. ",
   "frameworks": {
@@ -14,9 +14,9 @@
   },
   "licenseUrl": "https://raw.githubusercontent.com/johannbrink/EFAuditing/master/LICENSE",
   "projectUrl": "https://github.com/johannbrink/EFAuditing",
-  "releaseNotes": "\n1.0.0\nInitial Build",
+  "releaseNotes": "\n1.0.1\nChanged EFAuditing dependency to 1.0.5 that has the correct Async methods on IExternalAuditStoreProvider\n1.0.0\nInitial Build",
   "summary": "",
   "tags": [ "EntityFramework EF7 Mongo MongoDB Audit Auditing" ],
   "title": "MongoDB AuditStoreProvider for EFAuditing",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
