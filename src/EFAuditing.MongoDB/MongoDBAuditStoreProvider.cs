@@ -1,39 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 namespace EFAuditing.MongoDB
 {
-    public class MongoDBAuditStoreProvider : IExternalAuditStoreProvider
+    public class AuditLogExtended : AuditLog
     {
-        private readonly string _connectionString;
-        private readonly string _databaseName;
-        private readonly string _collectionName;
+        [BsonId]
+        public ObjectId ObjectId { get; set; }
+    }
 
-        public MongoDBAuditStoreProvider(string connectionString, string databaseName, string collectionName)
+    public class MongoDbAuditStoreProvider : IExternalAuditStoreProvider
+    {
+        internal MongoClient Client { get; set; }
+        internal string ServerName { get; set; }
+        internal int TimeoutMilliseconds { get; set; }
+        internal string DatabaseName { get; set; }
+        internal string CollectionName { get; set; }
+
+        public MongoDbAuditStoreProvider()
         {
-            _connectionString = connectionString;
-            _databaseName = databaseName;
-            _collectionName = collectionName;
+            ServerName = "localhost";
+            DatabaseName = "local";
+            CollectionName = "AuditLogs";
+            TimeoutMilliseconds = 1000;
         }
 
-        public List<AuditLog> ReadAuditLogs()
+        public IEnumerable<AuditLog> ReadAuditLogs()
         {
-            throw new NotImplementedException();
+            if (Client == null)
+                throw new Exception("The Start extension method was not called");
+            var database = Client.GetDatabase(DatabaseName);
+            var collection = database.GetCollection<AuditLogExtended>(CollectionName);
+            return collection.Find(x=>x.AuditLogId >= 0).ToListAsync().Result.Select(x=>(AuditLog)x);
         }
 
-        public async void WriteAuditLogsAsync(IEnumerable<AuditLog> auditLogs)
+        public async Task WriteAuditLogs(IEnumerable<AuditLog> auditLogs)
         {
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase(_databaseName);
-            var collection = database.GetCollection<BsonDocument>(_collectionName);
-            foreach (var auditLog in auditLogs)
-            {
-                auditLog.ToBsonDocument(typeof(AuditLog), )
-            }
-            collection.InsertManyAsync(auditLogs.ToBsonDocument<AuditLog>());
-            throw new NotImplementedException();
+            if (Client == null)
+                throw new Exception("The Start extension method was not called");
+            var database = Client.GetDatabase(DatabaseName);
+            var collection = database.GetCollection<AuditLog>(CollectionName);
+            await collection.InsertManyAsync(auditLogs);
         }
     }
 }

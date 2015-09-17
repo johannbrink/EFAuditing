@@ -1,4 +1,4 @@
-﻿{
+{
   "authors": [ "Johann" ],
   "commands": {
     "EFAuditing.TestHarness": "EFAuditing.TestHarness.MongoDB"
@@ -7,7 +7,8 @@
     "EFAuditing": "",
     "EFAuditing.MongoDB": "",
     "EFAuditing.TestHarness.Shared": "",
-    "EntityFramework.SqlServer": "7.0.0-beta7"
+    "EntityFramework.SqlServer": "7.0.0-beta7",
+    "Microsoft.Framework.Configuration.Json": "1.0.0-beta7"
   },
   "description": "EFAuditing.TestHarness.MongoDB Console Application",
   "frameworks": {
