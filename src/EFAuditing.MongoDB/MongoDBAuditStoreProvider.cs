@@ -16,7 +16,7 @@ namespace EFAuditing.MongoDB
 
     public class MongoDbAuditStoreProvider : IExternalAuditStoreProvider
     {
-        internal MongoClient Client { get; set; }
+        internal MongoClient Client { private get; set; }
         internal string ServerName { get; set; }
         internal int TimeoutMilliseconds { get; set; }
         internal string DatabaseName { get; set; }
