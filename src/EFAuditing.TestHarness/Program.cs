@@ -34,6 +34,9 @@ namespace EFAuditing.TestHarness
                         .Count(p => p.GetCustomAttributes(typeof(DoNotAudit), true).Any());
                 myDbContext.SaveChanges("Test User");
 
+                customer.LastName = "TestLastName"; // This should throw an exception below
+                myDbContext.SaveChanges("Test User");
+
                 Console.WriteLine($"Added object with {auditablePropCount} auditable properties and {nonAuditablePropCount} non-auditable properties." );
 
                 var auditLogs = myDbContext.GetAuditLogs().ToList();

@@ -18,17 +18,11 @@ namespace EFAuditing
     {
         private const string KeySeperator = ";";
 
-        internal static IEnumerable<AuditLog> GetAuditLogs(string userName,
-            IEnumerable<EntityEntry> addedEntityEntries,
+        internal static List<AuditLog> GetAuditLogsForExistingEntities(string userName,
             IEnumerable<EntityEntry> modifiedEntityEntries,
             IEnumerable<EntityEntry> deletedEntityEntries)
         {
             var auditLogs = new List<AuditLog>();
-            foreach (
-                var auditRecordsForEntityEntry in
-                    addedEntityEntries.Select(
-                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Added)))
-                auditLogs.AddRange(auditRecordsForEntityEntry);
             foreach (
                 var auditRecordsForEntityEntry in
                     modifiedEntityEntries.Select(
@@ -38,6 +32,18 @@ namespace EFAuditing
                 var auditRecordsForEntityEntry in
                     deletedEntityEntries.Select(
                         changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Deleted)))
+                auditLogs.AddRange(auditRecordsForEntityEntry);
+            return auditLogs;
+        }
+
+        internal static List<AuditLog> GetAuditLogsForAddedEntities(string userName,
+            IEnumerable<EntityEntry> addedEntityEntries)
+        {
+            var auditLogs = new List<AuditLog>();
+            foreach (
+                var auditRecordsForEntityEntry in
+                    addedEntityEntries.Select(
+                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Added)))
                 auditLogs.AddRange(auditRecordsForEntityEntry);
             return auditLogs;
         }
@@ -55,6 +61,9 @@ namespace EFAuditing
                 .Where(x => auditedPropertyNames.Contains(x.Name))
                 .Select(property => entityEntry.Property(property.Name)))
             {
+                if(entityState == EntityState.Modified)
+                    if (Convert.ToString(propertyEntry.OriginalValue) == Convert.ToString(propertyEntry.CurrentValue)) //Values are the same, don't log
+                        continue;
                 returnValue.Add(new AuditLog
                 {
                     KeyNames = keyRepresentation.Key,

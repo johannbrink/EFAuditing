@@ -200,10 +200,12 @@ namespace EFAuditing
             var modifiedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Modified).ToList();
             var deletedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Deleted).ToList();
 
+            var auditLogs = AuditLogBuilder.GetAuditLogsForExistingEntities(userName, modifiedEntityEntries, deletedEntityEntries);
+
             var result = base.SaveChanges();
 
-            var auditLogs = AuditLogBuilder.GetAuditLogs(userName, addedEntityEntries, modifiedEntityEntries,
-                deletedEntityEntries);
+            auditLogs.AddRange(AuditLogBuilder.GetAuditLogsForAddedEntities(userName, addedEntityEntries));
+            //auditLogs.
 
             if (ExternalProviderSpecified)
             {
